@@ -1,1 +1,25 @@
 //定时器中断函数
+void TIM4_IRQHandler(void)   //TIM4中断
+{
+	u8 Temp[11]={0};
+	if(TIM_GetITStatus(TIM4,TIM_IT_Update) != RESET) //检查指定的TIM中断发生与否:TIM 中断源
+	{
+		ms_n++;
+		Turn_x(Dir,50);
+		if(ms_n>=20)  //每20ms读一次陀螺仪角度值
+		{
+			ms_n=0;
+			if(sign)
+			{
+				memcpy(Temp,Re_buf,11);
+				sign=0;
+				if(Re_buf[0]==0x55)       //检查帧头
+				{
+					if(Re_buf[1]==0x53)
+						angle = ((short)(Temp[7]<<8| Temp[6]))/32768.0*180;   //Z轴偏航角
+				}
+			}
+		}
+		TIM_ClearITPendingBit(TIM4,TIM_IT_Update);  //清除TIMx的中断待处理位:TIM 中断源
+	}
+}
