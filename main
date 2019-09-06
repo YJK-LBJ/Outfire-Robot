@@ -1,7 +1,70 @@
+define u8 unsigned char
+#define MI_on 1   //这里宏定义代表传感器触发时为高电平还是低电平，声音传感器触发时为高电平
+#define MI_off 0  
+#define LIG_on 0  //光电管低电平为碰到障碍物
+#define LIG_off 1 //光电管高电平为无障碍物
+#define FIR_on 0  //火焰传感器触发时为低电平
+#define FIR_off 1 //无火焰时为高电平
+
+#define TURN_L_R_TIME 500  //转90度需要的时间，单位ms
+#define TURN_ARND_TIME 1000 //调头需要的时间，单位ms
+
+void Out_fire(void)；
+
+u8 Room_n=0;    //房间标号
 void main()
 {
   while(1)
   {
-    if(MI)
-  }
+    if(MI==MI_on)				//声音启动
+    {
+      Dir=STRA;
+      delay_ms(1500);		//驶离启动区
+      while(1)
+      {
+        if(LIG1==LIG_off)   //如果第一个光电管探测到无障碍物，则左拐
+        {
+          Dir=LEFT;
+          delay_ms(TURN_L_R_TIME);			//左转
+          Dir=STRA;
+          delay_ms(1000);			          //直行
+          Dir=LEFT;
+          delay_ms(TURN_L_R_TIME);			//左转
+          Dir=STRA;                     //直行
+          Room_n=1;                     //记录当前房间为1号
+          Out_fire();			              //灭火
+        }
+      }
+   }
+}
+void Out_fire(void)
+{
+	u8 OP_DEL_time=0;   //记录喷水时间，喷水时间不能过长
+	if(Room_n==1)       //如果是第一个房间(不同房间情况不一样)
+	{
+    while（1）  //搜寻火源
+    {
+		  if(FIR3==0)			
+				Dir=STRA;
+			if(FIR4==0 ||FIR5==0)
+				Dir=RIGHT;
+    }
+		Dir=STOP;				//遇到蜡烛前的白线
+		OPEN_DEL();				//喷水2s
+		while(FIR1==1 && FIR2==1 && FIR3==1 && FIR4==1 && FIR5==1)  //如果火灭了则跳出
+		{
+			delay_ms(1000);
+			OP_DEL_time++;
+			if(OP_DEL_time>=4)  //超过4s则跳出
+				break;
+		}
+		CLOS_DEL();				//关闭水泵
+		Dir=RIGHT;
+		delay_ms(TURN_ARND_TIME);	//调头
+		Dir=STRA;
+	}
+	if(Room_n==2)
+	{
+		
+	}
 }
