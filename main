@@ -27,13 +27,79 @@ void main()
           Dir=LEFT;
           delay_ms(TURN_L_R_TIME);			//左转
           Dir=STRA;
-          delay_ms(1000);			          //直行
+          delay_ms(500);			          //直行
           Dir=LEFT;
           delay_ms(TURN_L_R_TIME);			//左转
-          Dir=STRA;                     //直行
+          Dir=STRA;  //直行
+	  delay_ms(500);
           Room_n=1;                     //记录当前房间为1号
           Out_fire();			              //灭火
         }
+		while(LIG3)
+		{
+			Dir=STRA;
+		}//从第一个房间出来直到碰到第二个房间的墙壁
+		delay_ms(1000);//缓冲
+		Dir=RIGHT;
+		delay_ms(TURN_L_R_TIME);
+		Dir=STRA;
+		delay_ms(500);
+		
+	if(LIG1==LIG_off)
+	{
+		Dir=LEFT;
+		delay_ms(TURN_L_R_TIME);
+		Dir=STRA;
+		delay_ms(500);
+		Dir=LEFT;
+		delay_ms(TURN_L_R_TIME);
+		Dir=STRA;
+		delay_ms(200);
+		Room_n=2;
+		Out_fire();	
+	}
+	Dir=STRA;
+	delay_ms(1000);
+	while(LIG3)
+	{
+		Dir=STRA;
+	}//从第二个房间出来直到碰到第三个房间的墙壁
+	delay_ms(1000);//缓冲
+	Dir=LEFT;
+	delay_ms(TURN_L_R_TIME);
+	Dir=STRA;
+	delay_ms(500);
+	
+	if(LIG5==LIG_off)
+	{
+		Dir=RIGHT;
+		delay_ms(TURN_L_R_TIME);
+		Dir=STRA;
+		delay_ms(500);
+		Room_n=3;                     //记录当前房间为3号
+        Out_fire();			              //灭火
+	}
+	Dir=STRA;
+	delay_ms(1000);
+	while(LIG3)
+	{
+		Dir=STRA;
+	}//从第三个房间出来直到碰到第二个房间的墙壁
+	delay_ms(1000);//缓冲
+	Dir=LEFT;
+	delay_ms(TURN_L_R_TIME);
+	Dir=STRA;
+	delay_ms(2000);
+	
+	if(LIG1==LIG_off)
+	{
+		Dir=LEFT;
+		delay_ms(TURN_L_R_TIME);
+		Dir=STRA;
+		delay_ms(500);
+		Room_n=3;                     //记录当前房间为3号
+        Out_fire();			              //灭火
+	}			
       }
    }
 }
@@ -42,16 +108,32 @@ void Out_fire(void)
 	u8 OP_DEL_time=0;   //记录喷水时间，喷水时间不能过长
 	if(Room_n==1)       //如果是第一个房间(不同房间情况不一样)
 	{
-    while（1）  //搜寻火源
-    {
-		  if(FIR3==0)			
-				Dir=STRA;
-			if(FIR4==0 ||FIR5==0)
-				Dir=RIGHT;
-    }
-		Dir=STOP;				//遇到蜡烛前的白线
+   		 while（1）  //搜寻火源
+    		{
+		  if(FIR3==FIR_on)	
+		  {
+			Dir=STRA;	
+			break;
+			}
+		  if(FIR4==FIR_on)
+		  {
+			Dir=RIGHT;
+			Dir=STRA;
+			break;
+			}
+		  if(FIR2==FIR_on)
+		  {
+		  	Dir=LEFT;
+			Dir=STRA;
+			break;
+			}
+    		}
+		if(循迹检测到白线)
+		{	
+			Dir=STOP;
+		}//遇到蜡烛前的白线
 		OPEN_DEL();				//喷水2s
-		while(FIR1==1 && FIR2==1 && FIR3==1 && FIR4==1 && FIR5==1)  //如果火灭了则跳出
+		while(FIR1==FIR_off && FIR2==FIR_off && FIR3==FIR_off && FIR4==FIR_off FIR_off&& FIR5==FIR_off)  //如果火灭了则跳出
 		{
 			delay_ms(1000);
 			OP_DEL_time++;
@@ -60,11 +142,148 @@ void Out_fire(void)
 		}
 		CLOS_DEL();				//关闭水泵
 		Dir=RIGHT;
-		delay_ms(TURN_ARND_TIME);	//调头
-		Dir=STRA;
+		delay_ms(TURN_ARND_TIMEE);	//调头
 	}
-	if(Room_n==2)
+	if(Room_n==2)//第二个房间
 	{
-		
+		u8 location;
+		while(1)
+		{
+			if(FIR5==FIR_on)
+			{
+				Dir=RIGHT;
+				delay_ms(TURN_L_R_TIME);
+				Dir=STRA;
+				location=A;
+				break;
+			}
+			if(FIR3==FIR_on)
+			{
+				Dir=STRA;
+				break;
+			}
+			if(FIR2==FIR_on)
+			{
+				Dir=LEFT;
+				delay_ms(TURN_L_R_TIME);
+				Dir=STRA;
+				location=C;
+				break;
+			}
+			if(FIR4==FIR_on)
+			{
+				Dir=RIGHT;
+				delay_ms(TURN_L_R_TIME);
+				Dir=STRA;
+				location=B;
+				break;
+			}
+		}
+		if(循迹检测到白线)
+		{	
+			Dir=STOP;
+		}//遇到蜡烛前的白线
+		OPEN_DEL();				//喷水2s
+		while(FIR1==FIR_off && FIR2==FIR_off && FIR3==FIR_off && FIR4==FIR_off FIR_off&& FIR5==FIR_off)  //如果火灭了则跳出
+		{
+			delay_ms(1000);
+			OP_DEL_time++;
+			if(OP_DEL_time>=4)  //超过4s则跳出
+				break;
+		}
+		CLOS_DEL();				//关闭水泵
+		switch(location)
+		{
+			case A:
+			Dir=LEFT;
+			delay_ms(TURN_ARND_TIMEE);	//调头
+			Dir=STRA;
+			delay_ms(500);
+			if(LIG1==LIG_off)
+			{
+				Dir=LEFT;
+				delay_ms(TURN_L_R_TIME);
+			}
+			break;
+			
+			case C:
+			Dir=RIGHT;
+			delay_ms(TURN_ARND_TIMEE);//掉头
+			Dir=STRA;
+			break;
+			
+			case B:
+			Dir=LEFT;
+			delay_ms(TURN_ARND_TIMEE);//掉头
+			Dir=STRA;
+			break;
+		}
+	}
+	
+	if(Room_n==3)       //如果是第一个房间(不同房间情况不一样)
+	{
+   		 while（1）  //搜寻火源
+    		{
+		  if(FIR3==FIR_on)	
+		  {
+			Dir=STRA;
+			location=C;
+			break;
+			}
+		  if(FIR4==FIR_on)
+		  {
+			Dir=RIGHT;
+			Dir=STRA;
+			location=B;
+			break;
+			}
+		  if(FIR5==FIR_on)
+		  {
+		  	Dir=RIGHT;
+			delay_ms(TURN_ARND_TIMEE);
+			location=A;
+			break;
+			}
+    	  }
+		if(循迹检测到白线)
+		{	
+			Dir=STOP;
+		}//遇到蜡烛前的白线
+		OPEN_DEL();				//喷水2s
+		while(FIR1==FIR_off && FIR2==FIR_off && FIR3==FIR_off && FIR4==FIR_off FIR_off&& FIR5==FIR_off)  //如果火灭了则跳出
+		{
+			delay_ms(1000);
+			OP_DEL_time++;
+			if(OP_DEL_time>=4)  //超过4s则跳出
+				break;
+		}
+		CLOS_DEL();				//关闭水泵
+		switch(location)
+		{
+			case A:
+			Dir=LEFT;
+			delay_ms(TURN_ARND_TIMEE);	//调头
+			Dir=STRA;
+			delay_ms(500);
+			if(LIG1==LIG_off)
+			{
+				Dir=LEFT;
+				delay_ms(TURN_L_R_TIME);
+				Dir=STRA;
+			}
+			break;
+			
+			case C:
+			Dir=RIGHT;
+			delay_ms(TURN_ARND_TIMEE);//掉头
+			Dir=STRA;
+			break;
+			
+			case B:
+			Dir=LEFT;
+			delay_ms(TURN_ARND_TIMEE);//掉头
+			Dir=STRA;
+			break;
+		}
 	}
 }
