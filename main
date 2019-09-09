@@ -18,22 +18,26 @@ void main()
   {
     if(MI==MI_on)				//声音启动
     {
-      Dir=STRA;
-      delay_ms(1500);		//驶离启动区
-      while(1)
-      {
-        if(LIG1==LIG_off)   //如果第一个光电管探测到无障碍物，则左拐
-        {
-          Dir=LEFT;
-          delay_ms(TURN_L_R_TIME);			//左转
-          Dir=STRA;
-          delay_ms(1000);			          //直行
-          Dir=LEFT;
-          delay_ms(TURN_L_R_TIME);			//左转
-          Dir=STRA;                     //直行
-          Room_n=1;                     //记录当前房间为1号
-          Out_fire();			              //灭火
-        }
+	Dir=STRA;
+	delay_ms(500);
+	while(1)
+	{
+		if(LIG3==LIG_on)
+			Dir=RIGHT;
+		else
+		{
+			if((LIG1==LIG_on && LIG2==LIG_off))
+				Dir=STRA;
+			else
+			{
+				if(LIG2==LIG_on)
+					Dir=RIGHT;
+				else
+					if(LIG2==LIG_off)
+						Dir=LEFT;
+			}
+		}
+	}
       }
    }
 }
