@@ -22,19 +22,19 @@ void main()
 	delay_ms(500);
 	while(1)
 	{
-		if(LIG3==LIG_on)
+		if(LIG3==LIG_on)			//如果中间的光电管检测到障碍物则右拐
 			Dir=RIGHT;
-		else
+		else					//否则左沿墙
 		{
-			if((LIG1==LIG_on && LIG2==LIG_off))
+			if((LIG1==LIG_on && LIG2==LIG_off)）//正常情况下直行
 				Dir=STRA;
-			else
+			else			
 			{
-				if(LIG2==LIG_on)
-					Dir=RIGHT;
+				if(LIG2==LIG_on)	//LIG2检测到墙太近
+					Dir=RIGHT;	//右拐
 				else
-					if(LIG2==LIG_off)
-						Dir=LEFT;
+					if(LIG1==LIG_off)	//LIG1检测到墙太远
+						Dir=LEFT;	//左拐
 			}
 		}
 	}
